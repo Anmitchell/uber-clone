@@ -10,6 +10,7 @@ import CustomButton from '@/components/CustomButton';
 const Onboarding = () => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,7 +44,15 @@ const Onboarding = () => {
           </View>
         ))}
       </Swiper>
-      <CustomButton title='Next' />
+      <CustomButton
+        title={isLastSlide ? 'Get started' : 'Next'}
+        onPress={() => {
+          isLastSlide
+            ? router.replace('/(auth)/sign-up')
+            : swiperRef.current?.scrollBy(1);
+        }}
+        style={[styles.buttonStyle]}
+      />
     </SafeAreaView>
   );
 };
@@ -117,8 +126,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     marginTop: 12,
   },
-  customButton: {
-    marginTop: 10,
-    color: 'red',
+  buttonStyle: {
+    width: '91.6667%', // Equivalent to w-11/12
+    marginTop: 40, // Equivalent to mt-10 (assuming 1 unit = 4px in Tailwind)
   },
 });
