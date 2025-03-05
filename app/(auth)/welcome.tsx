@@ -5,10 +5,12 @@ import { typography } from '../../styles/typography';
 import Swiper from 'react-native-swiper';
 import { useRef, useState } from 'react';
 import { onboarding } from '@/constants';
+import CustomButton from '@/components/CustomButton';
 
 const Onboarding = () => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -18,14 +20,14 @@ const Onboarding = () => {
           router.replace('/(auth)/sign-up');
         }}
       >
-        <Text style={styles.text}>Skip</Text>
+        <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
 
       <Swiper
         ref={swiperRef}
         loop={false}
-        dot={<View style={styles.dot} />}
-        activeDot={<View style={styles.activeDot} />}
+        dot={<View style={styles.swiperDot} />}
+        activeDot={<View style={styles.swiperActiveDot} />}
         onIndexChanged={(index) => setActiveIndex(index)}
       >
         {onboarding.map((item) => (
@@ -35,10 +37,22 @@ const Onboarding = () => {
               style={styles.onboardingImage}
               resizeMode='contain'
             />
-            <Text>{item.title}</Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>{item.title}</Text>
+            </View>
+            <Text style={styles.titleDescription}>{item.description}</Text>
           </View>
         ))}
       </Swiper>
+      <CustomButton
+        title={isLastSlide ? 'Get started' : 'Next'}
+        onPress={() => {
+          isLastSlide
+            ? router.replace('/(auth)/sign-up')
+            : swiperRef.current?.scrollBy(1);
+        }}
+        style={[styles.buttonStyle]}
+      />
     </SafeAreaView>
   );
 };
@@ -47,7 +61,8 @@ export default Onboarding;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Take up the full height of the screen
+    display: 'flex',
+    height: '100%', // Take up the full height of the screen
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -59,19 +74,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: 20,
   },
-  text: {
+  skipText: {
     color: 'black',
     fontSize: 16,
     fontFamily: typography.JakartaBold,
   },
-  dot: {
+  swiperDot: {
     width: 32,
     height: 4,
     marginHorizontal: 4,
     backgroundColor: '#E2E8F0',
     borderRadius: 9999,
   },
-  activeDot: {
+  swiperActiveDot: {
     width: 32,
     height: 4,
     marginHorizontal: 4,
@@ -82,9 +97,37 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 5,
   },
   onboardingImage: {
     width: '100%',
     height: 300,
+  },
+  titleContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: 40,
+  },
+  titleText: {
+    color: 'black',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginHorizontal: 40,
+    textAlign: 'center',
+  },
+  titleDescription: {
+    fontSize: 16,
+    fontFamily: typography.JakartaSemiBold,
+    textAlign: 'center',
+    color: '#858585',
+    marginHorizontal: 40,
+    marginTop: 12,
+  },
+  buttonStyle: {
+    width: '91.6667%', // Equivalent to w-11/12
+    marginTop: 40, // Equivalent to mt-10 (assuming 1 unit = 4px in Tailwind)
   },
 });
